@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-orange.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-orange.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-orange.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"orangexc.xyz","root":"/","scheme":"Pisces","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="返回顶部的按钮大家并不陌生，针对长滚动条的信息流页面添加返回顶部的按钮可以给用户良好的体验，而返回顶部的实现也是多种多样，本文分享几个案例并给出评价 作为引子讲一个常用的案例，对与不知道的作为一个小彩蛋吧！对于微博与微信朋友圈的返回顶部可以双击最顶部的区域（包含时间，网络，电量）来返回顶部 大家见过哪些创意的返回顶部呢？欢迎留言交流，下面进入正文">
+<meta property="og:type" content="article">
+<meta property="og:title" content="返回顶部的几种实现">
+<meta property="og:url" content="https://orangexc.xyz/2016/12/07/back-to-top/index.html">
+<meta property="og:site_name" content="Orange&#39;s Blog">
+<meta property="og:description" content="返回顶部的按钮大家并不陌生，针对长滚动条的信息流页面添加返回顶部的按钮可以给用户良好的体验，而返回顶部的实现也是多种多样，本文分享几个案例并给出评价 作为引子讲一个常用的案例，对与不知道的作为一个小彩蛋吧！对于微博与微信朋友圈的返回顶部可以双击最顶部的区域（包含时间，网络，电量）来返回顶部 大家见过哪些创意的返回顶部呢？欢迎留言交流，下面进入正文">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://orangexc.xyz/uploads/back-to-top1.jpg">
+<meta property="article:published_time" content="2016-12-07T11:59:29.000Z">
+<meta property="article:modified_time" content="2020-03-07T04:36:18.008Z">
+<meta property="article:author" content="Orange">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://orangexc.xyz/uploads/back-to-top1.jpg">
+
+
+<link rel="canonical" href="https://orangexc.xyz/2016/12/07/back-to-top/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>返回顶部的几种实现 | Orange's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Orange's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E8%B7%B3%E8%BD%AC%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">直接跳转的方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E5%90%8D%E9%94%9A%E7%82%B9%E8%B7%B3%E8%BD%AC%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">1.1.</span> <span class="nav-text">命名锚点跳转的方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#scroll-%E5%87%BD%E6%95%B0%E8%B7%B3%E8%BD%AC"><span class="nav-number">1.2.</span> <span class="nav-text">scroll 函数跳转</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#setTimeout-%E6%A8%A1%E6%8B%9F%E6%BB%9A%E5%8A%A8%E5%8A%A8%E7%94%BB"><span class="nav-number">2.</span> <span class="nav-text">setTimeout 模拟滚动动画</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#window-requestAnimationFrame"><span class="nav-number">3.</span> <span class="nav-text">window.requestAnimationFrame</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%80%9F%E5%8A%A9-jQuery"><span class="nav-number">4.</span> <span class="nav-text">借助 jQuery</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Orange"
+      src="/uploads/@avatar.jpg">
+  <p class="site-author-name" itemprop="name">Orange</p>
+  <div class="site-description" itemprop="description">Go big or go home</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/OrangeXC" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;OrangeXC" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/orangewxc" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;orangewxc" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:me@orangexc.xyz" title="E-Mail → mailto:me@orangexc.xyz"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://orangexc.xyz/2016/12/07/back-to-top/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/@avatar.jpg">
+      <meta itemprop="name" content="Orange">
+      <meta itemprop="description" content="Go big or go home">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Orange's Blog">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          返回顶部的几种实现
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-12-07 19:59:29" itemprop="dateCreated datePublished" datetime="2016-12-07T19:59:29+08:00">2016-12-07</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><img src="/uploads/back-to-top1.jpg" alt=""></p>
+<p>返回顶部的按钮大家并不陌生，针对长滚动条的信息流页面添加返回顶部的按钮可以给用户良好的体验，而返回顶部的实现也是多种多样，本文分享几个案例并给出评价</p>
+<p>作为引子讲一个常用的案例，对与不知道的作为一个小彩蛋吧！对于微博与微信朋友圈的返回顶部可以双击最顶部的区域（包含时间，网络，电量）来返回顶部</p>
+<p>大家见过哪些创意的返回顶部呢？欢迎留言交流，下面进入正文</p>
+<a id="more"></a>
+
+<h2 id="直接跳转的方式"><a href="#直接跳转的方式" class="headerlink" title="直接跳转的方式"></a>直接跳转的方式</h2><p>对于追求极简的方式达到预期效果的人可能会喜欢这种方式，不托泥带水也不用考虑兼容问题</p>
+<p>国内的大站如<a href="http://www.sina.com.cn/" target="_blank" rel="noopener">新浪主页</a>,<a href="https://www.taobao.com/" target="_blank" rel="noopener">淘宝网</a>,<a href="https://www.jd.com/" target="_blank" rel="noopener">京东</a>,<a href="http://news.baidu.com/" target="_blank" rel="noopener">百度新闻</a></p>
+<p>不难发现此类的大站为了兼容性与浏览器渲染速度选择了<strong>直接跳转的方式</strong>，实现基本含两种方式</p>
+<h3 id="命名锚点跳转的方式"><a href="#命名锚点跳转的方式" class="headerlink" title="命名锚点跳转的方式"></a>命名锚点跳转的方式</h3><blockquote>
+<p>用锚点 #top（可变）返回到顶部预设的 id 为 top（可变）的元素，或者在页面顶部的 a 标签 name 属性值为 top（可变），新版本的浏览器（chrome等）默认支持 #top 锚点返回顶部且不需要前面所提条件，但是前面条件的优先级大于默认跳转。</p>
+</blockquote>
+<p>上面说的有些绕口，下面逐句解释，读明白且理解的可以直接看下节</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"#top"</span>&gt;</span>返回顶部<span class="tag">&lt;/<span class="name">a</span>&gt;</span>  <span class="comment">&lt;!-- fiexd 定位在页面右下角 --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">"top"</span>&gt;</span>顶部<span class="tag">&lt;/<span class="name">p</span>&gt;</span>  <span class="comment">&lt;!-- id 为 top --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">name</span>=<span class="string">"top"</span>&gt;</span><span class="tag">&lt;/<span class="name">a</span>&gt;</span>  <span class="comment">&lt;!-- a 标签且 name 为 top --&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>上面代码包含了所有的描述，简单易懂，下面说下优先级，这个是关键，避免无意中犯了错误却无从下手</p>
+<blockquote>
+<p>注意: id &gt; name &gt; 默认</p>
+</blockquote>
+<p>不建议大家用默认的方式，具体有兼容问题和优先级低的问题，id 与 name 均可，但要注意命名冲突</p>
+<h3 id="scroll-函数跳转"><a href="#scroll-函数跳转" class="headerlink" title="scroll 函数跳转"></a>scroll 函数跳转</h3><blockquote>
+<p>window.scroll(x, y) 方法，x 是水平滚动位置，y 是垂直滚动位置，必须两个参数都给进去不然会报错，大家可能发现有 window.scrollY，这里只改变垂直方向的滚动为什么不能用，一个方面它返回的不是函数无法传参，另一方面无法被赋值</p>
+</blockquote>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"javascript: scroll(0, 0)"</span>&gt;</span>返回顶部<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里方便展示，实际不建议在标签内使用 js，可以调用一个方法，简单易懂。</p>
+<h2 id="setTimeout-模拟滚动动画"><a href="#setTimeout-模拟滚动动画" class="headerlink" title="setTimeout 模拟滚动动画"></a>setTimeout 模拟滚动动画</h2><blockquote>
+<p>setTimeout() 方法递归调用，改变滚动条距顶部位置</p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">backTop</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">window</span>.scrollBy(<span class="number">0</span>, <span class="number">-100</span>)</span><br><span class="line"></span><br><span class="line">  scrolldelay = setTimeout(<span class="string">'backTop()'</span>, <span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> sTop = <span class="built_in">document</span>.documentElement.scrollTop + <span class="built_in">document</span>.body.scrollTop</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (sTop === <span class="number">0</span>) &#123;</span><br><span class="line">    clearTimeout(scrolldelay)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意优化网页资源，使用不当会非常卡顿，可以通过调节 setTimeout 的第二个参数来控制滚动速度(回调时间单位 ms)，下面解释声明sTop 变量的写法</p>
+<p>获取scrollTop值，声明了DTD的标准网页取 document.documentElement.scrollTop，否则取 document.body.scrollTop 因为二者只有一个会生效，另一个就恒为 0，所以取和值可以得到网页的真正的 scrollTop 值</p>
+<blockquote>
+<p>注：非标准版（webkit 内核）采用的是 <code>document.body.scrollTop</code></p>
+</blockquote>
+<h2 id="window-requestAnimationFrame"><a href="#window-requestAnimationFrame" class="headerlink" title="window.requestAnimationFrame"></a>window.requestAnimationFrame</h2><blockquote>
+<p>window.requestAnimationFrame() 这个方法是用来在页面重绘之前，通知浏览器调用一个指定的函数，以满足开发者操作动画的需求。这个方法接受一个函数为参，该函数会在重绘前调用。</p>
+</blockquote>
+<p>完整的文档看 <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window/requestAnimationFrame" target="_blank" rel="noopener">MDN</a> 和 <a href="http://javascript.ruanyifeng.com/htmlapi/requestanimationframe.html" target="_blank" rel="noopener">JavaScript 标准参考教程（alpha）</a>，里面有详细描述和兼容性详情</p>
+<p>看过文档发现 requestAnimationFrame 适合用于连续的动画，而我们的需求与连续动画关系大吗？我们不妨一试。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> isWebkit = navigator.userAgent.toLowerCase().match(<span class="regexp">/webkit\/([\d.]+)/</span>)</span><br><span class="line"><span class="keyword">const</span> requestAnimationFrame = <span class="built_in">window</span>.requestAnimationFrame || <span class="built_in">window</span>.mozRequestAnimationFrame || <span class="built_in">window</span>.webkitRequestAnimationFrame || <span class="built_in">window</span>.msRequestAnimationFrame</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">backTop</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> move = <span class="built_in">window</span>.scrollY</span><br><span class="line">  <span class="keyword">let</span> span = move / <span class="number">15</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">step</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">document</span>.documentElement.scrollTop + <span class="built_in">document</span>.body.scrollTop &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (isWebkit) &#123;</span><br><span class="line">        <span class="built_in">document</span>.body.scrollTop -= <span class="number">300</span></span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">document</span>.documentElement.scrollTop -= <span class="number">300</span></span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      requestAnimationFrame(step)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  requestAnimationFrame(step)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面代码为什么定义 move 与 span 这里是方便计算速度，粘贴代码运行你会发现滚动的距离越大速度就会越快，反而会越慢</p>
+<p>这种用法本质上可以使动画更加流畅，但是重点在于页面优化，requestAnimationFrame是在主线程上完成。这意味着，如果主线程非常繁忙，requestAnimationFrame的动画效果会大打折扣。</p>
+<h2 id="借助-jQuery"><a href="#借助-jQuery" class="headerlink" title="借助 jQuery"></a>借助 jQuery</h2><p>目前的前端把焦点从 jQuery 移到了 MVVM 框架，不论如何当初的 jQuery 对于 DOM 操作与低版本浏览器兼容贡献巨大。如果你即考虑兼容性又想要流畅的动画可以继续使用 jQuery。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">backTop</span> (<span class="params">minHeight</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> backTopHtml = <span class="string">'&lt;div id="backTopBtn"&gt;返回顶部&lt;/div&gt;'</span></span><br><span class="line"></span><br><span class="line">  $(<span class="string">'#page'</span>).append(backTopHtml)</span><br><span class="line"></span><br><span class="line">  $(<span class="string">'#backTopBtn'</span>).click(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    $(<span class="string">'html, body'</span>).animate(&#123;<span class="attr">scrollTop</span>: <span class="number">0</span>&#125;, <span class="number">700</span>)</span><br><span class="line">  &#125;).hover(</span><br><span class="line">    <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      $(<span class="keyword">this</span>).addClass(<span class="string">'hover'</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      $(<span class="keyword">this</span>).removeClass(<span class="string">'hover'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  minHeight ? minHeight = minHeight : minHeight = <span class="number">600</span></span><br><span class="line"></span><br><span class="line">  $(<span class="built_in">window</span>).scroll(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> s = $(<span class="built_in">window</span>).scrollTop()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (s &gt; minHeight) &#123;</span><br><span class="line">      $(<span class="string">'#backTopBtn'</span>).fadeIn(<span class="number">100</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      $(<span class="string">'#backTopBtn'</span>).fadeOut(<span class="number">100</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">backTop()</span><br></pre></td></tr></table></figure>
+
+<p>这里初始状态的返回顶部为不可见，通过判断页面滚动高度切换显示隐藏，hover 的样式可以自己设计。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>总结了几种返回顶部的方式，orange 认为滚动或跳转对用户体验并没有影响（影响用户体验的是有没有返回顶部的按钮），既然选择了返回顶部的按钮那么性能一定是第一位的，一味追求滚动动画导致页面滚动过程中卡顿进而影响了整个网页的用户体验，在这个细节上负面的例子太多不一一列举。</p>
+<p>总之本文的用意除了阐述各个方法的用法外还想提醒大家在前端开发中细节才是致命的，orange 也一直在踩坑，说到聪明的大厂为什么选用跳转，哈哈，先回去看看负面教材给我们的教训就知道了，技术点不在于滚动，而在于整个网页的优化，如果你的网站优化的足够好，那么拿滚动来炫技没人会反对。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/11/14/vue-live-player/" rel="prev" title="基于 Vue 的直播播放器实战">
+                  <i class="fa fa-chevron-left"></i> 基于 Vue 的直播播放器实战
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/12/13/css-font-weight/" rel="next" title="解决 font-weight 无效的问题">
+                  解决 font-weight 无效的问题 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+  
+  
+  
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Orange</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'eb2068e9455b70ca891b',
+      clientSecret: '61b36e1b37fda850dea7e3ed24c67df073165234',
+      repo        : 'orangexc.github.io',
+      owner       : 'OrangeXC',
+      admin       : ['OrangeXC'],
+      id          : 'e0eff84feeed85d3f621749f706a14f1',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

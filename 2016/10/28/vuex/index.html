@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-orange.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-orange.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-orange.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"orangexc.xyz","root":"/","scheme":"Pisces","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="本文就着之前几天的文章 Vue2 移动端开发环境搭建 继续扩展，上一篇文章有人反馈说讲到最后只有 rem 是移动端相关的知识，没错我个人认为除了 rem 和 touch 事件特殊外其它与 pc 端无异（手机系统版本和浏览器的 bug 放在这里讨论无意义），下面请出今天的大咖 vuex">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vuex 实战">
+<meta property="og:url" content="https://orangexc.xyz/2016/10/28/vuex/index.html">
+<meta property="og:site_name" content="Orange&#39;s Blog">
+<meta property="og:description" content="本文就着之前几天的文章 Vue2 移动端开发环境搭建 继续扩展，上一篇文章有人反馈说讲到最后只有 rem 是移动端相关的知识，没错我个人认为除了 rem 和 touch 事件特殊外其它与 pc 端无异（手机系统版本和浏览器的 bug 放在这里讨论无意义），下面请出今天的大咖 vuex">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://orangexc.xyz/uploads/vuex1.png">
+<meta property="og:image" content="https://orangexc.xyz/uploads/vuex2.png">
+<meta property="article:published_time" content="2016-10-28T02:12:43.000Z">
+<meta property="article:modified_time" content="2020-03-07T04:36:18.016Z">
+<meta property="article:author" content="Orange">
+<meta property="article:tag" content="Vue">
+<meta property="article:tag" content="Vuex">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://orangexc.xyz/uploads/vuex1.png">
+
+
+<link rel="canonical" href="https://orangexc.xyz/2016/10/28/vuex/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Vuex 实战 | Orange's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Orange's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7"><span class="nav-number">1.</span> <span class="nav-text">状态管理工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vuex2-%E6%A6%82%E8%A7%88"><span class="nav-number">2.</span> <span class="nav-text">Vuex2 概览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E6%88%98"><span class="nav-number">3.</span> <span class="nav-text">实战</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Orange"
+      src="/uploads/@avatar.jpg">
+  <p class="site-author-name" itemprop="name">Orange</p>
+  <div class="site-description" itemprop="description">Go big or go home</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/OrangeXC" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;OrangeXC" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/orangewxc" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;orangewxc" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:me@orangexc.xyz" title="E-Mail → mailto:me@orangexc.xyz"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://orangexc.xyz/2016/10/28/vuex/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/@avatar.jpg">
+      <meta itemprop="name" content="Orange">
+      <meta itemprop="description" content="Go big or go home">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Orange's Blog">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vuex 实战
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-10-28 10:12:43" itemprop="dateCreated datePublished" datetime="2016-10-28T10:12:43+08:00">2016-10-28</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><img src="/uploads/vuex1.png" alt=""></p>
+<p>本文就着之前几天的文章 <a href="http://orangexc.xyz/2016/10/18/Vue2-mobile-terminal-development-environment-to-build/">Vue2 移动端开发环境搭建</a> 继续扩展，上一篇文章有人反馈说讲到最后只有 <code>rem</code> 是移动端相关的知识，没错我个人认为除了 <code>rem</code> 和 <code>touch</code> 事件特殊外其它与 pc 端无异（手机系统版本和浏览器的 bug 放在这里讨论无意义），下面请出今天的大咖 vuex</p>
+<a id="more"></a>
+
+<h2 id="状态管理工具"><a href="#状态管理工具" class="headerlink" title="状态管理工具"></a>状态管理工具</h2><p>说到这里有两个疑：</p>
+<p>1.什么是状态管理工具？</p>
+<p>状态管理工具起源于早期的 Flux，意在管理项目中各个状态，状态保存在 store 中，状态是只读的，只能通过 action 触发 store 的更新。</p>
+<p>2.问我们为什么使用状态管理工具？</p>
+<p>当一个项目逐渐壮大我们需要管理的状态就会变得繁杂，例如：父级组件传递状态到子组件，子组件再次改变同一个状态时就要想办法告诉父级组件状态改变了，情况再复杂点呢！子组件之间又相互影响，又影响到其他子组件的父组件呢？情况变得越来越糟糕，我们需要一个全局的公共状态管理容器，把我们的状态都放进去统一管理。</p>
+<p>大型项目对状态的管理需求越来约大，从而发展到今天的 react + redux 组合，angular + ngRedux 组合， vue + vuex 组合。</p>
+<p>这里 redux 作为后起之秀有很多真对 Flux 的改进。感兴趣的可以深入了解，这里只关心 vuex 而且是 2.x，用过 1.x 版本的可以顺利过渡到 2.x。</p>
+<h2 id="Vuex2-概览"><a href="#Vuex2-概览" class="headerlink" title="Vuex2 概览"></a>Vuex2 概览</h2><blockquote>
+<p>Vuex2 官方文档：<a href="http://vuex.vuejs.org/en/index.html" target="_blank" rel="noopener">http://vuex.vuejs.org/en/index.html</a></p>
+</blockquote>
+<p>能看懂文档的可以跳过实战了。。。</p>
+<p>实战开始之前先放出文档，归根结底还是因为文档描述过于简单（简陋），看的我云里雾里，这个对于搞过 redux 的我而言不是原理不理解，而是用法上没有一个能让我一眼看懂的简单粗暴的例子。</p>
+<p>方便大家理解工作流程，先给出官方的配图</p>
+<p><img src="/uploads/vuex2.png" alt=""></p>
+<p>从左边看 vue components(组件) -&gt;  action（只能通过 dispatch 调用，与此同时可以异步与后端的 API 做交互） -&gt; mutations(只能通过 action 发起 commit 调用，此时开发工具可以监测到数据的流动) -&gt; state （mutations 传递修改过的状态到 state）-&gt; state 自动同步到视图</p>
+<p>完成整个循环数据的流动是单向的，从而避免了双向数据流动的复杂性，不同的组件可以修改同一个状态，并将修改后的状态同步到所有关联此状态的组件。</p>
+<h2 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h2><p>原理就解释到这，直接上一个实际例子。</p>
+<p>这个例子的背景是我需要一个 webview，说到这不得不提 android 和 ios 的区别，目的就是全局判断设备类型存入 state 在局部直接取到类型做判断。</p>
+<p>这里其实可以通过 props 传递 data 实现，说到这里考虑到可能产生多级子组件，我每一层都需要 props 传递，又顾及到是全局属性（因为嵌入到哪个平台的页面就走那个平台的接口）</p>
+<p>安装 vuex 的步骤就省了，在之前的文章介绍过了</p>
+<p>在 src 下新建文件夹 vuex，进入 vuex 新建 store.js</p>
+<p>然后去 main.js 加入</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> store <span class="keyword">from</span> <span class="string">'./vuex/store'</span></span><br></pre></td></tr></table></figure>
+
+<p>再修改 Vue 实例如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  router,</span><br><span class="line">  store,</span><br><span class="line">  render: <span class="function"><span class="params">h</span> =&gt;</span> h(App)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>我们去新建的 store.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue  <span class="keyword">from</span> <span class="string">'vue'</span>;</span><br><span class="line"><span class="keyword">import</span> Vuex <span class="keyword">from</span> <span class="string">'vuex'</span>;</span><br><span class="line"></span><br><span class="line">Vue.use(Vuex)</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">  state: &#123;</span><br><span class="line">    platform: <span class="string">''</span></span><br><span class="line">  &#125;,</span><br><span class="line">  mutations: &#123;</span><br><span class="line">    SET_APP(state, platform) &#123;</span><br><span class="line">      state.platform = platform;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  actions: &#123;</span><br><span class="line">    setApp(&#123;commit&#125;, platform) &#123;</span><br><span class="line">      commit(<span class="string">'SET_APP'</span>, platform);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  getters: &#123;</span><br><span class="line">    getApp: <span class="function">(<span class="params">state</span>) =&gt;</span> state.platform</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>看到这里不急着往下进行，官方给的建议是 state、mutations、actions、getters 都分离成单独文件再引入到 store.js 中，这里只是为了提供一个简单粗暴的例子，把大部分流程都封装在一个文件里了，也方便修改测试。跟着上面工作流程图一步一步的走一遍，不难发现我们整个流程走下来只差组件分别调用 setApp 和 getApp 了。</p>
+</blockquote>
+<p>说到组件先来看看完整的 App.vue</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"app"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"logo"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"./assets/logo.png"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">article-content</span>&gt;</span><span class="tag">&lt;/<span class="name">article-content</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">share</span>&gt;</span><span class="tag">&lt;/<span class="name">share</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">comment</span>&gt;</span><span class="tag">&lt;/<span class="name">comment</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript"><span class="keyword">import</span> comment <span class="keyword">from</span> <span class="string">'./component/Comment.vue'</span>;</span></span><br><span class="line"><span class="javascript"><span class="keyword">import</span> articleContent <span class="keyword">from</span> <span class="string">'./component/ArticleContent.vue'</span>;</span></span><br><span class="line"><span class="javascript"><span class="keyword">import</span> share <span class="keyword">from</span> <span class="string">'./component/Share.vue'</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="javascript"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span></span><br><span class="line">  data () &#123;</span><br><span class="line"><span class="actionscript">    <span class="keyword">return</span> &#123;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  components: &#123;</span><br><span class="line">    articleContent,</span><br><span class="line">    comment,</span><br><span class="line">    share</span><br><span class="line">  &#125;,</span><br><span class="line">  mounted () &#123;</span><br><span class="line"><span class="javascript">    <span class="keyword">let</span> u = navigator.userAgent;</span></span><br><span class="line"></span><br><span class="line"><span class="actionscript">    <span class="keyword">if</span> ( u.indexOf(<span class="string">'Android'</span>) &gt; <span class="number">-1</span> || u.indexOf(<span class="string">'Adr'</span>) &gt; <span class="number">-1</span> ) &#123;</span></span><br><span class="line"><span class="actionscript">      <span class="keyword">this</span>.$store.dispatch(<span class="string">'setApp'</span>, <span class="string">'android'</span>);</span></span><br><span class="line"><span class="javascript">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ( !!u.match(<span class="regexp">/\(i[^;]+;( U;)? CPU.+Mac OS X/</span>) ) &#123;</span></span><br><span class="line"><span class="actionscript">      <span class="keyword">this</span>.$store.dispatch(<span class="string">'setApp'</span>, <span class="string">'ios'</span>);</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span> <span class="attr">lang</span>=<span class="string">"sass"</span>&gt;</span></span><br><span class="line"><span class="css">  @<span class="keyword">import</span> <span class="string">"/style/base.scss"</span>;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里引入了三个组件，在 <code>mounted()</code> 里我们判断设备类型并发起 dispatch ，关键方法是 <code>this.$store.dispatch(&#39;setApp&#39;, ...args);</code></p>
+<p>简单易懂我们 dispatch 了一个 action（setApp），然后 commit 到 mutations（SET_APP），在 SET_APP 中修改了 state.platform</p>
+<p>下面看看子组件是怎么获取,因为都是重复的用法所以只给一个 share 组件</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"article-share-block"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"divider-line"</span> <span class="attr">layout</span>=<span class="string">"row"</span> <span class="attr">layout-align</span>=<span class="string">"center center"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"left-line"</span> <span class="attr">flex</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">"label"</span>&gt;</span>分享到<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"right-line"</span> <span class="attr">flex</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">layout</span>=<span class="string">"row"</span> <span class="attr">layout-align</span>=<span class="string">"space-between center"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">img</span> <span class="attr">class</span>=<span class="string">"share-icon"</span> <span class="attr">v-tap</span>=<span class="string">"&#123; methods: share, target: 'wechatTimeline' &#125;"</span> <span class="attr">src</span>=<span class="string">"../img/wechat_timeline.png"</span> <span class="attr">alt</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">img</span> <span class="attr">class</span>=<span class="string">"share-icon"</span> <span class="attr">v-tap</span>=<span class="string">"&#123; methods: share, target: 'wechatFriend' &#125;"</span> <span class="attr">src</span>=<span class="string">"../img/wechat_friend.png"</span> <span class="attr">alt</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">img</span> <span class="attr">class</span>=<span class="string">"share-icon"</span> <span class="attr">v-tap</span>=<span class="string">"&#123; methods: share, target: 'weibo' &#125;"</span> <span class="attr">src</span>=<span class="string">"../img/weibo.png"</span> <span class="attr">alt</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">img</span> <span class="attr">class</span>=<span class="string">"share-icon"</span> <span class="attr">v-tap</span>=<span class="string">"&#123; methods: share, target: 'qq' &#125;"</span> <span class="attr">src</span>=<span class="string">"../img/qq.png"</span> <span class="attr">alt</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span></span><br><span class="line">  data () &#123;</span><br><span class="line"><span class="actionscript">    <span class="keyword">return</span> &#123;</span></span><br><span class="line"><span class="actionscript">      platform: <span class="string">''</span></span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  mounted () &#123;</span><br><span class="line"><span class="actionscript">    <span class="keyword">this</span>.platform = <span class="keyword">this</span>.$store.getters.getApp;</span></span><br><span class="line">  &#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    initIOS() &#123;</span><br><span class="line"><span class="javascript">      <span class="built_in">window</span>.connectWebViewJavascriptBridge(<span class="function">(<span class="params">bridge</span>) =&gt;</span> &#123;</span></span><br><span class="line"><span class="actionscript">        <span class="keyword">this</span>.webviewBridge = bridge;</span></span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line">    share(target) &#123;</span><br><span class="line"><span class="actionscript">      <span class="keyword">if</span> (<span class="keyword">this</span>.platform === <span class="string">'ios'</span>) &#123;</span></span><br><span class="line"><span class="actionscript">        <span class="keyword">this</span>.initIOS();</span></span><br><span class="line"><span class="actionscript">        <span class="keyword">this</span>.webviewBridge.callHandler(<span class="string">'invokeArticleShare'</span>, &#123;</span></span><br><span class="line">          shareTarget: target</span><br><span class="line">        &#125;);</span><br><span class="line"><span class="actionscript">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">this</span>.platform === <span class="string">'android'</span>) &#123;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">window</span>.idarex.invokeArticleShare(target);</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span> <span class="attr">lang</span>=<span class="string">"sass"</span>&gt;</span></span><br><span class="line"><span class="css">  @<span class="keyword">import</span> <span class="string">"../style/component/share.scss"</span>;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>还是看关键语句 <code>this.platform = this.$store.getters.getApp;</code> ，这样我们可以取到 state 中的 platform 完成一个完整存取数据的循环。</p>
+<blockquote>
+<p>说到这，不要急着把完整的组件粘贴运行，一定会抱错的，因为引入了第三方指令库（v-tap 实现移动端 tap 事件），这些都是次要的也没必要还原我的项目，整个原理和流程说的已经很清楚了，直接创建自己的组件跑一下就没什么问题了，大同小异。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>vuex 的原理其实简单易懂，本文通过一个小 demo 完成了一个简单流程，但真实项目里我不推荐这么做，最好把 store.js 模块化，方便后期维护，官方还提供了中间件等概念，准备在项目应用的可以研读源代码，从工程化的角度规划一下项目，当前 vue2 比较盛行，相信不久在 github 上会有大量的优秀项目供大家参考。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Vue/" rel="tag"># Vue</a>
+              <a href="/tags/Vuex/" rel="tag"># Vuex</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/10/21/front-end-router/" rel="prev" title="前端路由的两种实现原理">
+                  <i class="fa fa-chevron-left"></i> 前端路由的两种实现原理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/10/31/js-type-conversion/" rel="next" title="JavaScript 类型转换深度学习">
+                  JavaScript 类型转换深度学习 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+  
+  
+  
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Orange</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'eb2068e9455b70ca891b',
+      clientSecret: '61b36e1b37fda850dea7e3ed24c67df073165234',
+      repo        : 'orangexc.github.io',
+      owner       : 'OrangeXC',
+      admin       : ['OrangeXC'],
+      id          : 'df4874e3ec4025e39e0e8add1d54a8f3',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

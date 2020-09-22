@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-orange.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-orange.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-orange.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"orangexc.xyz","root":"/","scheme":"Pisces","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="早期的路由都是后端实现的，直接根据 url 来 reload 页面，页面变得越来越复杂服务器端压力变大，随着 ajax 的出现，页面实现非 reload 就能刷新数据，也给前端路由的出现奠定了基础。我们可以通过记录 url 来记录 ajax 的变化，从而实现前端路由。 本文主要讲两种主流方式实现前端路由。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端路由的两种实现原理">
+<meta property="og:url" content="https://orangexc.xyz/2016/10/21/front-end-router/index.html">
+<meta property="og:site_name" content="Orange&#39;s Blog">
+<meta property="og:description" content="早期的路由都是后端实现的，直接根据 url 来 reload 页面，页面变得越来越复杂服务器端压力变大，随着 ajax 的出现，页面实现非 reload 就能刷新数据，也给前端路由的出现奠定了基础。我们可以通过记录 url 来记录 ajax 的变化，从而实现前端路由。 本文主要讲两种主流方式实现前端路由。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://orangexc.xyz/uploads/front-end-router1.jpg">
+<meta property="og:image" content="https://orangexc.xyz/uploads/front-end-router2.png">
+<meta property="og:image" content="https://orangexc.xyz/uploads/front-end-router3.png">
+<meta property="article:published_time" content="2016-10-21T11:28:54.000Z">
+<meta property="article:modified_time" content="2020-03-07T04:36:18.010Z">
+<meta property="article:author" content="Orange">
+<meta property="article:tag" content="Router">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://orangexc.xyz/uploads/front-end-router1.jpg">
+
+
+<link rel="canonical" href="https://orangexc.xyz/2016/10/21/front-end-router/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>前端路由的两种实现原理 | Orange's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Orange's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#History-API"><span class="nav-number">1.</span> <span class="nav-text">History API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hash"><span class="nav-number">2.</span> <span class="nav-text">hash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Orange"
+      src="/uploads/@avatar.jpg">
+  <p class="site-author-name" itemprop="name">Orange</p>
+  <div class="site-description" itemprop="description">Go big or go home</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/OrangeXC" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;OrangeXC" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/orangewxc" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;orangewxc" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:me@orangexc.xyz" title="E-Mail → mailto:me@orangexc.xyz"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://orangexc.xyz/2016/10/21/front-end-router/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/@avatar.jpg">
+      <meta itemprop="name" content="Orange">
+      <meta itemprop="description" content="Go big or go home">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Orange's Blog">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          前端路由的两种实现原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-10-21 19:28:54" itemprop="dateCreated datePublished" datetime="2016-10-21T19:28:54+08:00">2016-10-21</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><img src="/uploads/front-end-router1.jpg" alt=""></p>
+<p>早期的路由都是后端实现的，直接根据 url 来 reload 页面，页面变得越来越复杂服务器端压力变大，随着 ajax 的出现，页面实现非 reload 就能刷新数据，也给前端路由的出现奠定了基础。我们可以通过记录 url 来记录 ajax 的变化，从而实现前端路由。</p>
+<p>本文主要讲两种主流方式实现前端路由。</p>
+<a id="more"></a>
+
+<h2 id="History-API"><a href="#History-API" class="headerlink" title="History API"></a>History API</h2><p>这里不细说每一个 API 的用法，大家可以看 MDN 的文档：<a href="https://developer.mozilla.org/en-US/docs/Web/API/History" target="_blank" rel="noopener">https://developer.mozilla.org/en-US/docs/Web/API/History</a></p>
+<p>重点说其中的两个新增的API <code>history.pushState</code> 和 <code>history.replaceState</code></p>
+<p>这两个 API 都接收三个参数，分别是</p>
+<ul>
+<li><strong>状态对象（state object）</strong> — 一个JavaScript对象，与用pushState()方法创建的新历史记录条目关联。无论何时用户导航到新创建的状态，popstate事件都会被触发，并且事件对象的state属性都包含历史记录条目的状态对象的拷贝。</li>
+<li><strong>标题（title）</strong> — FireFox浏览器目前会忽略该参数，虽然以后可能会用上。考虑到未来可能会对该方法进行修改，传一个空字符串会比较安全。或者，你也可以传入一个简短的标题，标明将要进入的状态。</li>
+<li><strong>地址（URL）</strong> — 新的历史记录条目的地址。浏览器不会在调用pushState()方法后加载该地址，但之后，可能会试图加载，例如用户重启浏览器。新的URL不一定是绝对路径；如果是相对路径，它将以当前URL为基准；传入的URL与当前URL应该是同源的，否则，pushState()会抛出异常。该参数是可选的；不指定的话则为文档当前URL。</li>
+</ul>
+<p>相同之处是两个 API 都会操作浏览器的历史记录，而不会引起页面的刷新。</p>
+<p>不同之处在于，pushState会增加一条新的历史记录，而replaceState则会替换当前的历史记录。</p>
+<p>我们拿大百度的控制台举例子（具体说是我的浏览器在百度首页打开控制台。。。）</p>
+<p>我们在控制台输入</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.history.pushState(<span class="literal">null</span>, <span class="literal">null</span>, <span class="string">"https://www.baidu.com/?name=orange"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>好，我们观察此时的 url 变成了这样</p>
+<p><img src="/uploads/front-end-router2.png" alt=""></p>
+<p>我们这里不一一测试，直接给出其它用法，大家自行尝试</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.history.pushState(<span class="literal">null</span>, <span class="literal">null</span>, <span class="string">"https://www.baidu.com/name/orange"</span>);</span><br><span class="line"><span class="comment">//url: https://www.baidu.com/name/orange</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">window</span>.history.pushState(<span class="literal">null</span>, <span class="literal">null</span>, <span class="string">"?name=orange"</span>);</span><br><span class="line"><span class="comment">//url: https://www.baidu.com?name=orange</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">window</span>.history.pushState(<span class="literal">null</span>, <span class="literal">null</span>, <span class="string">"name=orange"</span>);</span><br><span class="line"><span class="comment">//url: https://www.baidu.com/name=orange</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">window</span>.history.pushState(<span class="literal">null</span>, <span class="literal">null</span>, <span class="string">"/name/orange"</span>);</span><br><span class="line"><span class="comment">//url: https://www.baidu.com/name/orange</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">window</span>.history.pushState(<span class="literal">null</span>, <span class="literal">null</span>, <span class="string">"name/orange"</span>);</span><br><span class="line"><span class="comment">//url: https://www.baidu.com/name/orange</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意:这里的 url 不支持跨域，当我们把 <code>www.baidu.com</code> 换成 <code>baidu.com</code> 时就会报错。</p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Uncaught DOMException: Failed to execute <span class="string">'pushState'</span> on <span class="string">'History'</span>: A history state object <span class="keyword">with</span> URL <span class="string">'https://baidu.com/?name=orange'</span> cannot be created <span class="keyword">in</span> a <span class="built_in">document</span> <span class="keyword">with</span> origin <span class="string">'https://www.baidu.com'</span> and URL <span class="string">'https://www.baidu.com/?name=orange'</span>.</span><br></pre></td></tr></table></figure>
+
+<p>回到上面例子中，每次改变 url 页面并没有刷新，同样根据上文所述，浏览器会产生历史记录</p>
+<p><img src="/uploads/front-end-router3.png" alt=""></p>
+<p>这就是实现页面无刷新情况下改变 url 的前提，下面我们说下第一个参数 <strong>状态对象</strong></p>
+<p>如果运行 <code>history.pushState()</code> 方法，历史栈对应的纪录就会存入 <strong>状态对象</strong>，我们可以随时主动调用历史条目</p>
+<p>此处引用 mozilla 的例子</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE HTML&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- this starts off as http://example.com/line?x=5 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">title</span>&gt;</span>Line Game - 5<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>You are at coordinate <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">"coord"</span>&gt;</span>5<span class="tag">&lt;/<span class="name">span</span>&gt;</span> on the line.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"?x=6"</span> <span class="attr">onclick</span>=<span class="string">"go(1); return false;"</span>&gt;</span>Advance to 6<span class="tag">&lt;/<span class="name">a</span>&gt;</span> or</span><br><span class="line"> <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"?x=4"</span> <span class="attr">onclick</span>=<span class="string">"go(-1); return false;"</span>&gt;</span>retreat to 4<span class="tag">&lt;/<span class="name">a</span>&gt;</span>?</span><br><span class="line"><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="actionscript"> <span class="keyword">var</span> currentPage = <span class="number">5</span>; <span class="comment">// prefilled by server！！！！</span></span></span><br><span class="line"><span class="actionscript"> <span class="function"><span class="keyword">function</span> <span class="title">go</span><span class="params">(d)</span> </span>&#123;</span></span><br><span class="line">     setupPage(currentPage + d);</span><br><span class="line"><span class="javascript">     history.pushState(currentPage, <span class="built_in">document</span>.title, <span class="string">'?x='</span> + currentPage);</span></span><br><span class="line"> &#125;</span><br><span class="line"><span class="actionscript"> onpopstate = <span class="function"><span class="keyword">function</span><span class="params">(event)</span> </span>&#123;</span></span><br><span class="line">     setupPage(event.state);</span><br><span class="line"> &#125;</span><br><span class="line"><span class="actionscript"> <span class="function"><span class="keyword">function</span> <span class="title">setupPage</span><span class="params">(page)</span> </span>&#123;</span></span><br><span class="line">     currentPage = page;</span><br><span class="line"><span class="javascript">     <span class="built_in">document</span>.title = <span class="string">'Line Game - '</span> + currentPage;</span></span><br><span class="line"><span class="javascript">     <span class="built_in">document</span>.getElementById(<span class="string">'coord'</span>).textContent = currentPage;</span></span><br><span class="line"><span class="javascript">     <span class="built_in">document</span>.links[<span class="number">0</span>].href = <span class="string">'?x='</span> + (currentPage+<span class="number">1</span>);</span></span><br><span class="line"><span class="javascript">     <span class="built_in">document</span>.links[<span class="number">0</span>].textContent = <span class="string">'Advance to '</span> + (currentPage+<span class="number">1</span>);</span></span><br><span class="line"><span class="javascript">     <span class="built_in">document</span>.links[<span class="number">1</span>].href = <span class="string">'?x='</span> + (currentPage<span class="number">-1</span>);</span></span><br><span class="line"><span class="javascript">     <span class="built_in">document</span>.links[<span class="number">1</span>].textContent = <span class="string">'retreat to '</span> + (currentPage<span class="number">-1</span>);</span></span><br><span class="line"> &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们点击 <code>Advance to ？</code>  对应的 url 与模版都会 +1，反之点击 <code>retreat to ？</code> 就会都 -1，这就满足了 url 与模版视图同时变化的需求</p>
+<p>实际当中我们不需要去模拟 onpopstate 事件，官方文档提供了 popstate 事件，当我们在历史记录中切换时就会产生 popstate 事件。对于触发 popstate 事件的方式，各浏览器实现也有差异，我们可以根据不同浏览器做兼容处理。</p>
+<h2 id="hash"><a href="#hash" class="headerlink" title="hash"></a>hash</h2><p>我们经常在 url 中看到 #，这个 # 有两种情况，一个是我们所谓的锚点，比如典型的回到顶部按钮原理、Github 上各个标题之间的跳转等，路由里的 # 不叫锚点，我们称之为 hash，大型框架的路由系统大多都是哈希实现的。</p>
+<p>同样我们需要一个根据监听哈希变化触发的事件 —— hashchange 事件</p>
+<p>我们用 <code>window.location</code> 处理哈希的改变时不会重新渲染页面，而是当作新页面加到历史记录中，这样我们跳转页面就可以在 hashchange 事件中注册 ajax 从而改变页面内容。</p>
+<p>这里我在 codepen 上模拟了一下原理</p>
+<p data-height="300" data-theme-id="0" data-slug-hash="LRrxvP" data-default-tab="html,result" data-user="orangexc" data-embed-version="2" class="codepen">See the Pen <a href="http://codepen.io/orangexc/pen/LRrxvP/" target="_blank" rel="noopener">router-demo</a> by orangexc (<a href="http://codepen.io/orangexc" target="_blank" rel="noopener">@orangexc</a>) on <a href="http://codepen.io" target="_blank" rel="noopener">CodePen</a>.</p>
+<script async src="http://assets.codepen.io/assets/embed/ei.js"></script>
+
+<p>hashchange 在低版本 IE 需要通过轮询监听 url 变化来实现，我们可以模拟如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params">window</span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 如果浏览器不支持原生实现的事件，则开始模拟，否则退出。</span></span><br><span class="line">  <span class="keyword">if</span> ( <span class="string">"onhashchange"</span> <span class="keyword">in</span> <span class="built_in">window</span>.document.body ) &#123; <span class="keyword">return</span>; &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> location = <span class="built_in">window</span>.location,</span><br><span class="line">  oldURL = location.href,</span><br><span class="line">  oldHash = location.hash;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 每隔100ms检查hash是否发生变化</span></span><br><span class="line">  setInterval(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> newURL = location.href,</span><br><span class="line">    newHash = location.hash;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// hash发生变化且全局注册有onhashchange方法（这个名字是为了和模拟的事件名保持统一）；</span></span><br><span class="line">    <span class="keyword">if</span> ( newHash != oldHash &amp;&amp; <span class="keyword">typeof</span> <span class="built_in">window</span>.onhashchange === <span class="string">"function"</span>  ) &#123;</span><br><span class="line">      <span class="comment">// 执行方法</span></span><br><span class="line">      <span class="built_in">window</span>.onhashchange(&#123;</span><br><span class="line">        type: <span class="string">"hashchange"</span>,</span><br><span class="line">        oldURL: oldURL,</span><br><span class="line">        newURL: newURL</span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">      oldURL = newURL;</span><br><span class="line">      oldHash = newHash;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, <span class="number">100</span>);</span><br><span class="line">&#125;)(<span class="built_in">window</span>);</span><br></pre></td></tr></table></figure>
+
+<p>大型框架的路由当然不会这么简单，angular 1.x 的路由对哈希、模版、处理器进行关联，大致如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">app.config([<span class="string">'$routeProvider'</span>, <span class="string">'$locationProvider'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">$routeProvider, $locationProvider</span>) </span>&#123;</span><br><span class="line"> $routeProvider</span><br><span class="line"> .when(<span class="string">'/article'</span>, &#123;</span><br><span class="line">   templateUrl: <span class="string">'/article.html'</span>,</span><br><span class="line">   controller: <span class="string">'ArticleController'</span></span><br><span class="line"> &#125;).otherwise(&#123;</span><br><span class="line">   redirectTo: <span class="string">'/index'</span></span><br><span class="line"> &#125;);</span><br><span class="line"> $locationProvider.html5Mode(<span class="literal">true</span>);</span><br><span class="line">&#125;])</span><br></pre></td></tr></table></figure>
+
+<p>这套路由方案默认是以 # 开头的哈希方式，如果不考虑低版本浏览器，就可以直接调用 <code>$locationProvider.html5Mode(true)</code> 利用 H5 的方案而不用哈希方案。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>两种方案我推荐 hash 方案，因为照顾到低级浏览器，就是不美观（多了一个 #），两者兼顾也不是不可，只能判断浏览器给出对应方案啦，不过也只支持 IE8+，更低版本兼容见上文！</p>
+<p>这个链接的 demo 含有判断方法：<a href="http://sandbox.runjs.cn/show/dxi5lgcx" target="_blank" rel="noopener">http://sandbox.runjs.cn/show/dxi5lgcx</a> 。同时给出 Github 仓库地址: <a href="https://github.com/cheft/minrouter" target="_blank" rel="noopener">minrouter</a>，推荐大家读下源码，仅仅 117 行，精辟！</p>
+<p>如果在上面链接测试时你的 url 里多了一个 #，说明你的浏览器该更新啦。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Router/" rel="tag"># Router</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/10/17/css-mobile-1px/" rel="prev" title="CSS 实现 1px 以内的移动">
+                  <i class="fa fa-chevron-left"></i> CSS 实现 1px 以内的移动
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/10/28/vuex/" rel="next" title="Vuex 实战">
+                  Vuex 实战 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+  
+  
+  
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Orange</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'eb2068e9455b70ca891b',
+      clientSecret: '61b36e1b37fda850dea7e3ed24c67df073165234',
+      repo        : 'orangexc.github.io',
+      owner       : 'OrangeXC',
+      admin       : ['OrangeXC'],
+      id          : 'ede2022bd0e003c25c4be1cdea736d9a',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

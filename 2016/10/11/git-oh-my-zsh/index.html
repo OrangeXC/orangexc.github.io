@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-orange.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-orange.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-orange.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"orangexc.xyz","root":"/","scheme":"Pisces","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="本篇文章介绍 Oh-My-Zsh 安装，以及 git 快捷键。也许你已经烦透了每天 git add . git commit -m &#39;some fix&#39; git push… 如果操作变成这样 ga . gcmsg &#39;some fix&#39; gp是不是很炫酷，好吧，对于已经使用的人没什么新鲜感。 接下来针对好奇的 Program development engineer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Oh-My-Zsh 操作 Git 的快捷键">
+<meta property="og:url" content="https://orangexc.xyz/2016/10/11/git-oh-my-zsh/index.html">
+<meta property="og:site_name" content="Orange&#39;s Blog">
+<meta property="og:description" content="本篇文章介绍 Oh-My-Zsh 安装，以及 git 快捷键。也许你已经烦透了每天 git add . git commit -m &#39;some fix&#39; git push… 如果操作变成这样 ga . gcmsg &#39;some fix&#39; gp是不是很炫酷，好吧，对于已经使用的人没什么新鲜感。 接下来针对好奇的 Program development engineer">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://orangexc.xyz/uploads/git-oh-my-zsh1.png">
+<meta property="article:published_time" content="2016-10-11T02:03:28.000Z">
+<meta property="article:modified_time" content="2020-03-07T04:36:18.011Z">
+<meta property="article:author" content="Orange">
+<meta property="article:tag" content="Git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://orangexc.xyz/uploads/git-oh-my-zsh1.png">
+
+
+<link rel="canonical" href="https://orangexc.xyz/2016/10/11/git-oh-my-zsh/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Oh-My-Zsh 操作 Git 的快捷键 | Orange's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Orange's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Oh-My-Zsh"><span class="nav-number">1.</span> <span class="nav-text">Oh-My-Zsh</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BF%AB%E6%8D%B7%E9%94%AE%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">1.2.</span> <span class="nav-text">快捷键实现原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="nav-number">2.</span> <span class="nav-text">常用快捷键</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Orange"
+      src="/uploads/@avatar.jpg">
+  <p class="site-author-name" itemprop="name">Orange</p>
+  <div class="site-description" itemprop="description">Go big or go home</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/OrangeXC" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;OrangeXC" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/orangewxc" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;orangewxc" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:me@orangexc.xyz" title="E-Mail → mailto:me@orangexc.xyz"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://orangexc.xyz/2016/10/11/git-oh-my-zsh/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/@avatar.jpg">
+      <meta itemprop="name" content="Orange">
+      <meta itemprop="description" content="Go big or go home">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Orange's Blog">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Oh-My-Zsh 操作 Git 的快捷键
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-10-11 10:03:28" itemprop="dateCreated datePublished" datetime="2016-10-11T10:03:28+08:00">2016-10-11</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><img src="/uploads/git-oh-my-zsh1.png" alt=""></p>
+<p>本篇文章介绍 Oh-My-Zsh 安装，以及 git 快捷键。也许你已经烦透了每天 <code>git add .</code> <code>git commit -m &#39;some fix&#39;</code> <code>git push</code>…</p>
+<p>如果操作变成这样 <code>ga .</code> <code>gcmsg &#39;some fix&#39;</code> <code>gp</code>是不是很炫酷，好吧，对于已经使用的人没什么新鲜感。</p>
+<p>接下来针对好奇的 Program development engineer（程序猿🐒），做详细介绍。</p>
+<p>相信 git 大家并不陌生，不熟悉 git 操作的可以看我转载的一篇阮一峰大神的 <a href="http://orangexc.xyz/2016/05/25/List-of-commonly-used-Git-commands/">常用 Git 命令清单</a>，重头戏 oh-my-zsh 大家可以看 <a href="http://ohmyz.sh/" target="_blank" rel="noopener">oh-my-zsh官网</a>。</p>
+<a id="more"></a>
+
+<h2 id="Oh-My-Zsh"><a href="#Oh-My-Zsh" class="headerlink" title="Oh-My-Zsh"></a>Oh-My-Zsh</h2><blockquote>
+<p>Oh-My-Zsh is an open source, community-driven framework for managing your ZSH configuration. It comes bundled with a ton of helpful functions, helpers, plugins, themes, and a few things that make you shout…</p>
+</blockquote>
+<p>简单说就是集成插件的命令行工具。针对 Mac 用户和 Linux 用户有很好的支持，windows 的朋友先不要急（有彩蛋）。</p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>Mac 用户和 Linux 用户通过在您的终端中运行以下命令之一来安装。可以安装通过 <code>curl</code> 或 <code>wget</code> 命令行。</p>
+<p>via curl</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh -c <span class="string">"<span class="variable">$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)</span>"</span></span><br></pre></td></tr></table></figure>
+
+<p>via wget</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh -c <span class="string">"<span class="variable">$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)</span>"</span></span><br></pre></td></tr></table></figure>
+
+<p>windows 我推荐一个集成 shell，git，oh-my-zsh 的命令行工具<a href="http://babun.github.io/" target="_blank" rel="noopener">Babun</a>。点击进入官网下载。当然官网还给出了其他炫酷功能大家可以详细阅读。</p>
+<p>oh-my-zsh 有许多插件和主题大家可以去 <code>~/.zshrc</code> 配置</p>
+<p>更多功能可以去官网阅读，这里强烈建议大家使用，因为会提高工作效率，对于追求完美开发体验的人帮助很大。</p>
+<h3 id="快捷键实现原理"><a href="#快捷键实现原理" class="headerlink" title="快捷键实现原理"></a>快捷键实现原理</h3><p>这里只说 oh-my-zsh 针对 git 的改进。为什么支持缩写的形式。</p>
+<p>大家可能知道 git 的快捷键 alias，它允许我们自己配制快捷键。例如</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">alias</span> gst=<span class="string">'git status'</span></span><br><span class="line"><span class="built_in">alias</span> gp=<span class="string">'git push'</span></span><br><span class="line"><span class="built_in">alias</span> gp=<span class="string">'git push'</span></span><br></pre></td></tr></table></figure>
+
+<p>需要配置的快捷键过多，如果对 git 操作了解不够深入的人无法自行配置。那么 oh-my-zsh 是如何实现的呢？</p>
+<p>其实就是用的 <code>alias</code> ，这里是 Github 上的链接 <a href="https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/git/git.plugin.zsh" target="_blank" rel="noopener">https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/git/git.plugin.zsh</a> ，通过 url 便知这里的<code>master</code>分支下，<code>plugins</code>插件目录，<code>git</code>插件下的配置文件。</p>
+<p>喜欢阅读代码的直接点击链接查看所有快捷键实现。这里便于整理把平时工作常用的快捷键给大家，至于不常用的大家查看 Github 上的链接，可能记得多了这种对应关系容易弄混，建议大家只熟练记忆工作常有的快捷键，其它可以按着 git 官方文档去做。减少出错和不必要的麻烦。</p>
+<h2 id="常用快捷键"><a href="#常用快捷键" class="headerlink" title="常用快捷键"></a>常用快捷键</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">g - git</span><br><span class="line">gst - git status</span><br><span class="line">gl - git pull</span><br><span class="line">gup - git pull --rebase</span><br><span class="line">gp - git push</span><br><span class="line">gd - git diff</span><br><span class="line">gdc - git diff --cached</span><br><span class="line">gdv - git diff -w &quot;$@&quot; | view</span><br><span class="line">gc - git commit -v</span><br><span class="line">gc! - git commit -v --amend</span><br><span class="line">gca - git commit -v -a</span><br><span class="line">gca! - git commit -v -a --amend</span><br><span class="line">gcmsg - git commit -m</span><br><span class="line">gco - git checkout</span><br><span class="line">gcm - git checkout master</span><br><span class="line">gr - git remote</span><br><span class="line">grv - git remote -v</span><br><span class="line">grmv - git remote rename</span><br><span class="line">grrm - git remote remove</span><br><span class="line">gsetr - git remote set-url</span><br><span class="line">grup - git remote update</span><br><span class="line">grbi - git rebase -i</span><br><span class="line">grbc - git rebase --continue</span><br><span class="line">grba - git rebase --abort</span><br><span class="line">gb - git branch</span><br><span class="line">gba - git branch -a</span><br><span class="line">gcount - git shortlog -sn</span><br><span class="line">gcl - git config --list</span><br><span class="line">gcp - git cherry-pick</span><br><span class="line">glg - git log --stat --max-count&#x3D;10</span><br><span class="line">glgg - git log --graph --max-count&#x3D;10</span><br><span class="line">glgga - git log --graph --decorate --all</span><br><span class="line">glo - git log --oneline --decorate --color</span><br><span class="line">glog - git log --oneline --decorate --color --graph</span><br><span class="line">gss - git status -s</span><br><span class="line">ga - git add</span><br><span class="line">gm - git merge</span><br><span class="line">grh - git reset HEAD</span><br><span class="line">grhh - git reset HEAD --hard</span><br><span class="line">gclean - git reset --hard &amp;&amp; git clean -dfx</span><br><span class="line">gwc - git whatchanged -p --abbrev-commit --pretty&#x3D;medium</span><br><span class="line">gsts - git stash show --text</span><br><span class="line">gsta - git stash</span><br><span class="line">gstp - git stash pop</span><br><span class="line">gstd - git stash drop</span><br><span class="line">ggpull - git pull origin $(current_branch)</span><br><span class="line">ggpur - git pull --rebase origin $(current_branch)</span><br><span class="line">ggpush - git push origin $(current_branch)</span><br><span class="line">ggpnp - git pull origin $(current_branch) &amp;&amp; git push origin $(current_branch)</span><br><span class="line">glp - _git_log_prettily</span><br></pre></td></tr></table></figure>
+
+<p>就我而言已经足够了，当然也已经包括了 Github 上大部分快捷键。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>好的开发工具可以大大提升工作效率，应用适当即可，过多依赖快捷键自动补全之类的工具时间久了基础知识退化，导致没有好用的工具无法编程，建议新人熟记原始命令后再尝试快捷键，避免错误的发生（毕竟这是管理代码工具，操作不当很可能删除了最近 <code>add</code> 之前或者 <code>commit</code> 之前的代码快照，因为某些操作是不可逆的），亲身踩过坑删除了一天的工作，虽然重写两个小时就完成，但十分不爽。</p>
+<p>哈哈，牢骚了一下，本人现在大四在校生，实习5个月，哪里写的不对还望大家指正。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Git/" rel="tag"># Git</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/10/12/js-array-Indexof/" rel="next" title="JavaScript 数组中的 indexOf 方法">
+                  JavaScript 数组中的 indexOf 方法 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+  
+  
+  
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Orange</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'eb2068e9455b70ca891b',
+      clientSecret: '61b36e1b37fda850dea7e3ed24c67df073165234',
+      repo        : 'orangexc.github.io',
+      owner       : 'OrangeXC',
+      admin       : ['OrangeXC'],
+      id          : '9902d0a82f54ebdba98889eb50dd3fa0',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

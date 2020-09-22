@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-orange.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-orange.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-orange.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"orangexc.xyz","root":"/","scheme":"Pisces","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+
+  <meta name="description" content="Angular2 的发布带来了一阵热议，很久之前就在筹备了，当时的官方答复就是彻底推翻重写，问世之后大家的呼声就是学习成本太高，虽然去掉了 1.x 里的一部分概念，但是加进了 typescript，虽然不强制使用，但是我推荐大家都试一试，毕竟此次改版是谷歌和微软两大家的产物。 对于会部署环境的可以尝试本文最后一节加入 Angular material2 ，个人认为对高度个性化的项目不推荐使用，对">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Angular2 从搭建环境到开发">
+<meta property="og:url" content="https://orangexc.xyz/2016/10/15/angular2-development/index.html">
+<meta property="og:site_name" content="Orange&#39;s Blog">
+<meta property="og:description" content="Angular2 的发布带来了一阵热议，很久之前就在筹备了，当时的官方答复就是彻底推翻重写，问世之后大家的呼声就是学习成本太高，虽然去掉了 1.x 里的一部分概念，但是加进了 typescript，虽然不强制使用，但是我推荐大家都试一试，毕竟此次改版是谷歌和微软两大家的产物。 对于会部署环境的可以尝试本文最后一节加入 Angular material2 ，个人认为对高度个性化的项目不推荐使用，对">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://orangexc.xyz/uploads/angular2-development1.png">
+<meta property="og:image" content="https://orangexc.xyz/uploads/angular2-development2.png">
+<meta property="og:image" content="https://orangexc.xyz/uploads/angular2-development3.png">
+<meta property="og:image" content="https://orangexc.xyz/uploads/angular2-development4.png">
+<meta property="og:image" content="https://orangexc.xyz/uploads/angular2-development5.png">
+<meta property="article:published_time" content="2016-10-15T02:38:55.000Z">
+<meta property="article:modified_time" content="2020-03-07T04:36:18.006Z">
+<meta property="article:author" content="Orange">
+<meta property="article:tag" content="Angular">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://orangexc.xyz/uploads/angular2-development1.png">
+
+
+<link rel="canonical" href="https://orangexc.xyz/2016/10/15/angular2-development/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Angular2 从搭建环境到开发 | Orange's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Orange's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Angular-CLI"><span class="nav-number">1.</span> <span class="nav-text">Angular-CLI</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%9C%AC%E5%9C%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E7%94%9F%E6%88%90%E5%92%8C%E8%BF%90%E8%A1%8Cangular2%E9%A1%B9%E7%9B%AE"><span class="nav-number">1.3.</span> <span class="nav-text">创建本地开发环境生成和运行angular2项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E7%BB%84%E4%BB%B6%E3%80%81%E6%8C%87%E4%BB%A4%E3%80%81%E7%AE%A1%E9%81%93%E5%92%8C%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.4.</span> <span class="nav-text">生成组件、指令、管道和服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%B7%AF%E7%94%B1"><span class="nav-number">1.5.</span> <span class="nav-text">创建路由</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BB%BA%E7%AB%8B%E4%B8%80%E4%B8%AA-build"><span class="nav-number">1.6.</span> <span class="nav-text">建立一个 build</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E4%BB%B6%E5%AE%9E%E6%88%98"><span class="nav-number">2.</span> <span class="nav-text">组件实战</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E5%85%A5-Angular-material2"><span class="nav-number">3.</span> <span class="nav-text">引入 Angular material2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Orange"
+      src="/uploads/@avatar.jpg">
+  <p class="site-author-name" itemprop="name">Orange</p>
+  <div class="site-description" itemprop="description">Go big or go home</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/OrangeXC" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;OrangeXC" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/orangewxc" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;orangewxc" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:me@orangexc.xyz" title="E-Mail → mailto:me@orangexc.xyz"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://orangexc.xyz/2016/10/15/angular2-development/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/@avatar.jpg">
+      <meta itemprop="name" content="Orange">
+      <meta itemprop="description" content="Go big or go home">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Orange's Blog">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Angular2 从搭建环境到开发
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-10-15 10:38:55" itemprop="dateCreated datePublished" datetime="2016-10-15T10:38:55+08:00">2016-10-15</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><img src="/uploads/angular2-development1.png" alt=""></p>
+<p>Angular2 的发布带来了一阵热议，很久之前就在筹备了，当时的官方答复就是彻底推翻重写，问世之后大家的呼声就是学习成本太高，虽然去掉了 1.x 里的一部分概念，但是加进了 typescript，虽然不强制使用，但是我推荐大家都试一试，毕竟此次改版是谷歌和微软两大家的产物。</p>
+<p>对于会部署环境的可以尝试本文最后一节加入 Angular material2 ，个人认为对高度个性化的项目不推荐使用，对企业级的 CMS 省去了写样式的时间，直接开始正文。</p>
+<a id="more"></a>
+
+<h2 id="Angular-CLI"><a href="#Angular-CLI" class="headerlink" title="Angular-CLI"></a>Angular-CLI</h2><p>说到 cli 大家不陌生，没出一个框架都会有对应的 cli ，俗称脚手架。angular2 本身提供了起步项目 <a href="https://github.com/valor-software/angular2-quickstart" target="_blank" rel="noopener">angular2-quickstart</a>，我尝试了一下，发现不是很好用，其它的大部分扩展需要自行安装，之后看了一下 angular-cli 部署简单易用，还提供了快捷搭建项目的目录。</p>
+<p>Github地址： <a href="https://github.com/angular/angular-cli" target="_blank" rel="noopener">https://github.com/angular/angular-cli</a></p>
+<p>我就简单说下 Github 里的文档吧，细部的大家扩展阅读。</p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>首先，最好先升级 node 到 6.x 可以避免 node 版本过低带来的不必要的麻烦。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g angular-cli</span><br></pre></td></tr></table></figure>
+
+<h3 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng --<span class="built_in">help</span></span><br></pre></td></tr></table></figure>
+
+<p>查看所有用法</p>
+<h3 id="创建本地开发环境生成和运行angular2项目"><a href="#创建本地开发环境生成和运行angular2项目" class="headerlink" title="创建本地开发环境生成和运行angular2项目"></a>创建本地开发环境生成和运行angular2项目</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ng new PROJECT_NAME</span><br><span class="line"><span class="built_in">cd</span> PROJECT_NAME</span><br><span class="line">ng serve</span><br></pre></td></tr></table></figure>
+
+<p>PROJECT_NAME 是你自己的项目名</p>
+<p>部署成功后不报错的情况下到浏览器 <a href="http://localhost:4200/，修改项目中文件后会自动部署" target="_blank" rel="noopener">http://localhost:4200/，修改项目中文件后会自动部署</a></p>
+<p>您可以配置默认的 HTTP 端口和一个 LiveReload server 用 <code>--</code>， 形如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng serve --host 0.0.0.0 --port 4201 --live-reload-port 49153</span><br></pre></td></tr></table></figure>
+
+<h3 id="生成组件、指令、管道和服务"><a href="#生成组件、指令、管道和服务" class="headerlink" title="生成组件、指令、管道和服务"></a>生成组件、指令、管道和服务</h3><p>命令以 <code>ng generate</code> 开头，可以缩写为 <code>ng g</code>，下面给出创建 component 的几种方式。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">ng generate component my-new-component</span><br><span class="line">ng g component my-new-component <span class="comment"># using the alias</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># components support relative path generation</span></span><br><span class="line"><span class="comment"># if in the directory src/app/feature/ and you run</span></span><br><span class="line">ng g component new-cmp</span><br><span class="line"><span class="comment"># your component will be generated in src/app/feature/new-cmp</span></span><br><span class="line"><span class="comment"># but if you were to run</span></span><br><span class="line">ng g component ../newer-cmp</span><br><span class="line"><span class="comment"># your component will be generated in src/app/newer-cmp</span></span><br></pre></td></tr></table></figure>
+
+<p>下表里是所有的命令：</p>
+<table>
+<thead>
+<tr>
+<th>Scaffold</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Component</td>
+<td>ng g component my-new-component</td>
+</tr>
+<tr>
+<td>Directive</td>
+<td>ng g directive my-new-directive</td>
+</tr>
+<tr>
+<td>Pipe</td>
+<td>ng g pipe my-new-pipe</td>
+</tr>
+<tr>
+<td>Service</td>
+<td>ng g service my-new-service</td>
+</tr>
+<tr>
+<td>Class</td>
+<td>ng g class my-new-class</td>
+</tr>
+<tr>
+<td>Interface</td>
+<td>ng g interface my-new-interface</td>
+</tr>
+<tr>
+<td>Enum</td>
+<td>ng g enum my-new-enum</td>
+</tr>
+<tr>
+<td>Module</td>
+<td>ng g module my-module</td>
+</tr>
+</tbody></table>
+<h3 id="创建路由"><a href="#创建路由" class="headerlink" title="创建路由"></a>创建路由</h3><p>这里 cli 暂时禁用了创建路由，新的路由生成器即将到来，您可以在这里阅读新路由器的官方文档：<a href="https://angular.io/docs/ts/latest/guide/router.html" target="_blank" rel="noopener">https://angular.io/docs/ts/latest/guide/router.html</a></p>
+<h3 id="建立一个-build"><a href="#建立一个-build" class="headerlink" title="建立一个 build"></a>建立一个 build</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng build</span><br></pre></td></tr></table></figure>
+
+<p>会生成到 <code>dist/</code> 目录下，其它关于测试，配置文件请大家去 Github 仔细阅读，这里只给最基本的搭建流程。</p>
+<h2 id="组件实战"><a href="#组件实战" class="headerlink" title="组件实战"></a>组件实战</h2><p>看到这你可能已经开始尝试了，创建项目的步骤相信大家参照上文可以轻松解决，这里我先尝试创建一个 component，命令如下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ng g component nav</span><br></pre></td></tr></table></figure>
+
+<p>这里我创建了一个 nav 组件。执行成功后，后台会自动部署。我们看一下文件目录有什么改变</p>
+<p><img src="/uploads/angular2-development2.png" alt=""></p>
+<p>多了一个叫做 nav 的文件夹，看一看文件目录</p>
+<p><img src="/uploads/angular2-development3.png" alt=""></p>
+<p>我们发现与项目创建时自带的 app component 目录结构相同，内容也大同小异，大家可以尝试去创建一个自己的组件，组件的样式可以去对应的 css 文件中修改。</p>
+<p>这时我的 <code>app.module.ts</code> 变成了如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; BrowserModule &#125; <span class="keyword">from</span> <span class="string">'@angular/platform-browser'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">'@angular/core'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormsModule &#125; <span class="keyword">from</span> <span class="string">'@angular/forms'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HttpModule &#125; <span class="keyword">from</span> <span class="string">'@angular/http'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; AppComponent &#125; <span class="keyword">from</span> <span class="string">'./app.component'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; NavComponent &#125; <span class="keyword">from</span> <span class="string">'./nav/nav.component'</span>;</span><br><span class="line"></span><br><span class="line">@NgModule(&#123;</span><br><span class="line">  declarations: [</span><br><span class="line">    AppComponent,</span><br><span class="line">    NavComponent</span><br><span class="line">  ],</span><br><span class="line">  imports: [</span><br><span class="line">    BrowserModule,</span><br><span class="line">    FormsModule,</span><br><span class="line">    HttpModule,</span><br><span class="line">  ],</span><br><span class="line">  providers: [],</span><br><span class="line">  bootstrap: [AppComponent]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里不难看出全局自动引入了 nav.component 组件。我们现在关心的问题是组件之间的引用和数据传输，这里为了简单起见，只给引入的方法，而数据传输、路由机制这里不做解释大家自行官网。</p>
+<p>下面说一下 app 内引入 nav 组件，只需要改变 <code>app.component.html</code> 如下。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span> <span class="attr">class</span>=<span class="string">"title"</span>&gt;</span></span><br><span class="line">  &#123;&#123;title&#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">app-nav</span>&gt;</span><span class="tag">&lt;/<span class="name">app-nav</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里的 class 在对应的 <code>app.component.css</code> 如下</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.title</span> &#123;</span><br><span class="line">  <span class="attribute">font-size</span>: <span class="number">100px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这时页面自动刷新字号变大 ，那么这里的 <code>app-nav</code> 标签从哪里得到的呢？</p>
+<p>我们去 <code>nav.component.ts</code> 里看一眼</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">'@angular/core'</span>;</span><br><span class="line"></span><br><span class="line">@Component(&#123;</span><br><span class="line">  selector: <span class="string">'app-nav'</span>,</span><br><span class="line">  templateUrl: <span class="string">'./nav.component.html'</span>,</span><br><span class="line">  styleUrls: [<span class="string">'./nav.component.css'</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">NavComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">constructor</span>() &#123; &#125;</span><br><span class="line"></span><br><span class="line">  ngOnInit() &#123;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>selector: &#39;app-nav&#39;</code> 说明我们的选择器选择的是 <code>app-nav</code> 标签，同样的可以通过 <code>[app-nav]</code> 选择属性。</p>
+<blockquote>
+<p>注：这里 selector 类似 css 中的选择器，大家也可以根据 1.x 中的 directive 来理解这里的组件</p>
+</blockquote>
+<p>此时页面会呈现成这样</p>
+<p><img src="/uploads/angular2-development4.png" alt=""></p>
+<p>好，到这里简单的组件引用已经实现。</p>
+<h2 id="引入-Angular-material2"><a href="#引入-Angular-material2" class="headerlink" title="引入 Angular material2"></a>引入 Angular material2</h2><p>文章开头已经阐述了引入 Angular material2 的优点，用过其它组件样式框架的都明白。</p>
+<p>安装命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install --save @angular/material</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>src/app/app.module.ts</code> 中引入框架</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; MaterialModule &#125; <span class="keyword">from</span> <span class="string">'@angular/material'</span>;</span><br><span class="line"><span class="comment">// other imports</span></span><br><span class="line">@NgModule(&#123;</span><br><span class="line">  imports: [MaterialModule.forRoot()],</span><br><span class="line">  ...</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">PizzaPartyAppModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>引入核心和主体风格，较 Angular material 1.x 的改进在于可以选择不同的色系。具体看文档链接：<a href="https://github.com/angular/material2/blob/master/docs/theming.md" target="_blank" rel="noopener">https://github.com/angular/material2/blob/master/docs/theming.md</a></p>
+<p>我们这里用的是 Angular CLI 这里又可以钻空子啦，添加下面一行到 <code>style.css</code>，注意是 <code>src</code> 目录下的文件</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@<span class="keyword">import</span> <span class="string">'~@angular/material/core/theming/prebuilt/deeppurple-amber.css'</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>deeppurple-amber</code> 主题颜色是可变的，具体看上文的文档链接。</p>
+<p>到这里一直打开控制台（是个好习惯）的朋友会发现类似下面的报错。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">client:<span class="number">49</span> [<span class="keyword">default</span>] J:\workspace\angular2\ts\epimss\node_modules\@angular2-material\slide-toggle\slide-toggle.d.ts:<span class="number">67</span>:<span class="number">19</span></span><br><span class="line">Cannot find name <span class="string">'HammerInput'</span>.</span><br><span class="line"></span><br><span class="line">client:<span class="number">49</span> [<span class="keyword">default</span>] J:\workspace\angular2\ts\epimss\node_modules\@angular2-material\core\gestures\MdGestureConfig.d.ts:<span class="number">4</span>:<span class="number">39</span></span><br><span class="line">Cannot find name <span class="string">'HammerManager'</span>.</span><br></pre></td></tr></table></figure>
+
+<p>文档也给出了解释，因为框架中 <code>md-slide-toggle</code> 和 <code>md-slider</code> 两个组件依赖外部第三方组件 <a href="http://hammerjs.github.io/" target="_blank" rel="noopener">HammerJS</a> 需要额外的配置。</p>
+<p>我们不急着用文档给的 npm 或引入 cdn 路径，因为亲测还是会报错，可能我引入方式有误，为了大家少走弯路直接给亲测有效的方法</p>
+<p>我们先去命令行工具运行 <code>npm i --save-dev @types/hammerjs</code></p>
+<p>然后编辑 <code>tsconfig.json</code> 文件将 hammerjs 添加到 types 下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"types"</span>: [</span><br><span class="line">  <span class="string">"jasmine"</span>, <span class="string">"hammerjs"</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>到这里发现页面自动刷新后报错消失了，如果需要字体图标可以在 <code>src/index.html</code> 中引入</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">"https://fonts.googleapis.com/icon?family=Material+Icons"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>目前为止，整个 Angular material2 已经整装待发。全部语法看这里：<a href="https://github.com/angular/material2#feature-status" target="_blank" rel="noopener">https://github.com/angular/material2#feature-status</a></p>
+<p>我们尝试着添加多个按钮组件测试一下，修改 <code>app.component.html</code> 文件，完整代码如下</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span> <span class="attr">class</span>=<span class="string">"title"</span>&gt;</span></span><br><span class="line">  &#123;&#123;title&#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">app-nav</span>&gt;</span><span class="tag">&lt;/<span class="name">app-nav</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">md-button</span>&gt;</span>FLAT<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">md-raised-button</span>&gt;</span>RAISED<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">md-icon-button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">md-icon</span> <span class="attr">class</span>=<span class="string">"md-24"</span>&gt;</span>favorite<span class="tag">&lt;/<span class="name">md-icon</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">md-fab</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">md-icon</span> <span class="attr">class</span>=<span class="string">"md-24"</span>&gt;</span>add<span class="tag">&lt;/<span class="name">md-icon</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">md-mini-fab</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">md-icon</span> <span class="attr">class</span>=<span class="string">"md-24"</span>&gt;</span>add<span class="tag">&lt;/<span class="name">md-icon</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">md-raised-button</span> <span class="attr">color</span>=<span class="string">"primary"</span>&gt;</span>PRIMARY<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">md-raised-button</span> <span class="attr">color</span>=<span class="string">"accent"</span>&gt;</span>ACCENT<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">md-raised-button</span> <span class="attr">color</span>=<span class="string">"warn"</span>&gt;</span>WARN<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">md-button</span> <span class="attr">disabled</span>&gt;</span>OFF<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">md-raised-button</span> [<span class="attr">disabled</span>]=<span class="string">"isDisabled"</span>&gt;</span>OFF<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">md-mini-fab</span> [<span class="attr">disabled</span>]=<span class="string">"isDisabled"</span>&gt;</span><span class="tag">&lt;<span class="name">md-icon</span>&gt;</span>check<span class="tag">&lt;/<span class="name">md-icon</span>&gt;</span><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>没问题这里手懒不写布局样式了，直接给 br 换行大家方便看些，待页面部署完成后我们会看到以下效果</p>
+<p><img src="/uploads/angular2-development5.png" alt=""></p>
+<p>炫酷的组件，更多组件语法参考上面给的链接，到这里相信大家学习 angular2 的信心倍增，真对已有组件可以完成快速开发，下一步就是大家去 Angular2 官网看其它概念的时候啦，处理数据实现与后端对接。项目上线，大功告成。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>orange 最近也是在学习新技术，更底层框架方面的知识还再学习，当今前端框架层出不穷，不要盲从，要根据公司需求和员工的工作经验选择框架，真说到性能方面哪个框架快的话，我虽然没测试过，但我确定 React、Vue、Angular2 几个之间相差无几，除非在实现的时候代码存在问题，因为这几个框架都经过了大型项目的考验。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Angular/" rel="tag"># Angular</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/10/14/css-flex-custom/" rel="prev" title="自己动手实现一个 Flex 布局框架">
+                  <i class="fa fa-chevron-left"></i> 自己动手实现一个 Flex 布局框架
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/10/15/css-inline-alignment/" rel="next" title="CSS 行内对齐的黑魔法">
+                  CSS 行内对齐的黑魔法 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+  
+  
+  
+
+
+
+      
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 2016 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Orange</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.css">
+
+<script>
+NexT.utils.loadComments('#gitalk-container', () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1.6.2/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'eb2068e9455b70ca891b',
+      clientSecret: '61b36e1b37fda850dea7e3ed24c67df073165234',
+      repo        : 'orangexc.github.io',
+      owner       : 'OrangeXC',
+      admin       : ['OrangeXC'],
+      id          : '5fc228dae64d477cc8380a4b31c3f30d',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
